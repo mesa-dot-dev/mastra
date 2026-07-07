@@ -1,5 +1,83 @@
 # @mastra/deployer
 
+## 1.48.0-alpha.9
+
+### Patch Changes
+
+- Updated dependencies [[`e84e791`](https://github.com/mastra-ai/mastra/commit/e84e79174031d7bc8793ca6c805eb38b06e7cfb1)]:
+  - @mastra/core@1.48.0-alpha.9
+  - @mastra/server@1.48.0-alpha.9
+
+## 1.48.0-alpha.8
+
+### Patch Changes
+
+- Updated dependencies [[`0ac14ce`](https://github.com/mastra-ai/mastra/commit/0ac14cea48e1b0a7857782153c78f7242fdf7e1a), [`c2f0b7f`](https://github.com/mastra-ai/mastra/commit/c2f0b7f1370f4428d165f51f0d1d9a48331cc257)]:
+  - @mastra/core@1.48.0-alpha.8
+  - @mastra/server@1.48.0-alpha.8
+
+## 1.48.0-alpha.7
+
+### Minor Changes
+
+- You can now define agents by file convention instead of registering each one in code: drop a directory under `src/mastra/agents/<name>/`, run a Mastra build/dev, and the agent is bundled and registered onto your Mastra instance automatically. A directory becomes an agent when it has a `config.ts` or `instructions.md`; `tools/*.ts` add tools, `skills/` add skills (a `createSkill()` module, a packaged `SKILL.md` with its `references/`, or a flat `<skill>.md`), and `subagents/<childId>/` (one level deep) add delegatable subagents. Each agent gets a default workspace unless `workspace.ts` / `config.workspace` overrides it, and files committed under `agents/<name>/workspace/` are mirrored into the bundle to seed that workspace at runtime. Projects with no file-based agents are unaffected — the original entry is used unchanged. ([#18609](https://github.com/mastra-ai/mastra/pull/18609))
+
+  ```text
+  src/mastra/agents/weather/
+    config.ts          # export default agentConfig({ model: 'openai/gpt-4o' })
+    instructions.md
+    tools/get_weather.ts
+    workspace/cities.json   # mirrored into the agent's workspace
+  ```
+
+### Patch Changes
+
+- Fix `ENOENT: .mastra-fs-agents-entry.mjs` when running `mastra dev`/`mastra build` in a project that uses file-based agents. The generated fs-agents wrapper entry was written before `bundler.prepare()` emptied the output directory, so it was wiped before the bundler could read it. Wrapper generation is now split: `prepareFsAgentsEntry` returns the generated source without writing, and the new `writeFsAgentsEntry` writes it after `prepare()` runs. ([#18694](https://github.com/mastra-ai/mastra/pull/18694))
+
+  ```ts
+  const fsAgents = await prepareFsAgentsEntry({ entryFile, mastraDir, outputDirectory });
+  await bundler.prepare(outputDirectory); // empties output dir
+  await writeFsAgentsEntry(fsAgents); // wrapper now survives for the bundler
+  ```
+
+- Updated dependencies [[`8be63b0`](https://github.com/mastra-ai/mastra/commit/8be63b015fb8d72cea1220f05e7dc3bb997cc249), [`ee14cae`](https://github.com/mastra-ai/mastra/commit/ee14cae244805783bde518a6142de28b744b169c), [`345eecc`](https://github.com/mastra-ai/mastra/commit/345eecce6ba519b5d987f0e10b5de4c8e5734580), [`ee14cae`](https://github.com/mastra-ai/mastra/commit/ee14cae244805783bde518a6142de28b744b169c)]:
+  - @mastra/core@1.48.0-alpha.7
+  - @mastra/server@1.48.0-alpha.7
+
+## 1.48.0-alpha.6
+
+### Patch Changes
+
+- Fix `FileEnvService.setEnvValue` corrupting env values that contain `$` when updating an existing key. Values such as database URLs and passwords that include `$&`, `$$`, or `$1` are now written exactly as provided instead of being mangled by `String.prototype.replace` special patterns. Closes #18633. ([#18672](https://github.com/mastra-ai/mastra/pull/18672))
+
+- Updated dependencies [[`b33c77d`](https://github.com/mastra-ai/mastra/commit/b33c77d5293f14a794f3ec38dc947a6676de2764), [`1009f77`](https://github.com/mastra-ai/mastra/commit/1009f772aa40016b49267c8566d0c29f6a16aa3c), [`23c31de`](https://github.com/mastra-ai/mastra/commit/23c31de96ed8153402dcf092ac84b27a0c3638c1), [`0368766`](https://github.com/mastra-ai/mastra/commit/0368766744c7ea3df4d6059e2cc15f7bdf55f5a6), [`2866f04`](https://github.com/mastra-ai/mastra/commit/2866f04953edb78c1637fa45cc53abe24122edcb)]:
+  - @mastra/core@1.48.0-alpha.6
+  - @mastra/server@1.48.0-alpha.6
+
+## 1.48.0-alpha.5
+
+### Patch Changes
+
+- Updated dependencies [[`1917c53`](https://github.com/mastra-ai/mastra/commit/1917c53b19dac43926f29c496893b0686462dca4), [`58e287b`](https://github.com/mastra-ai/mastra/commit/58e287b1edaf978b13745a1795989cad3826e82b)]:
+  - @mastra/core@1.48.0-alpha.5
+  - @mastra/server@1.48.0-alpha.5
+
+## 1.48.0-alpha.4
+
+### Patch Changes
+
+- Updated dependencies [[`705ba98`](https://github.com/mastra-ai/mastra/commit/705ba98726d388a596e896225f237907ca6807a9), [`e62c108`](https://github.com/mastra-ai/mastra/commit/e62c108409dfd6a6cac0a48ec39c5cc81d24fd52), [`bfbbb01`](https://github.com/mastra-ai/mastra/commit/bfbbb01bd845ba54cdc0c678c277d08a7cb847e4)]:
+  - @mastra/core@1.48.0-alpha.4
+  - @mastra/server@1.48.0-alpha.4
+
+## 1.48.0-alpha.3
+
+### Patch Changes
+
+- Updated dependencies [[`cdd5f93`](https://github.com/mastra-ai/mastra/commit/cdd5f939cefa67390629704dce92563ccbf492b2), [`1b8728a`](https://github.com/mastra-ai/mastra/commit/1b8728a57fd844205a452b0b4216d20ff60c784a), [`e05dade`](https://github.com/mastra-ai/mastra/commit/e05dade21c3e2551893ad939e6028cdafd84a1b2), [`213feb8`](https://github.com/mastra-ai/mastra/commit/213feb87bfdd1d8ec00ea660e218f9bcfcb34e7b)]:
+  - @mastra/core@1.48.0-alpha.3
+  - @mastra/server@1.48.0-alpha.3
+
 ## 1.48.0-alpha.2
 
 ### Patch Changes
